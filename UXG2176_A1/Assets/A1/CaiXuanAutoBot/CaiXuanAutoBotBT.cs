@@ -281,7 +281,12 @@ namespace CaiXuanAutoBot
             {
                 if (controller.IsMeleeAttackAvailable())
                 {
+                    var enemyPos = controller.GetEnemyPosition();
+                    var playerPos = controller.GetAutoBotPosition();
+                    var diff = enemyPos - playerPos;
+                    controller.SetFacing(diff);
                     controller.MeleeAttack();
+                    return NodeState.Success;
                 }
             }
             return NodeState.Failure;
