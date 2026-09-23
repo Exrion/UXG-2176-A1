@@ -3,8 +3,6 @@ using BehaviourTree;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 namespace BitBotBehaviourTree
 {
@@ -200,6 +198,52 @@ namespace BitBotBehaviourTree
     public class ShootFar : Node
     {
         private const float shootDistanceScalar = 0.8f;
+        private const float enemyVelocity = 5f;
+        private const float bulletVelocity = 7f;
+        private Vector2 previousEnemyPos = Vector2.zero;
+        private Vector2 enemyDirection = Vector2.zero;
+
+        public override NodeState Evaluate()
+        {
+            var controller = (AutoBotController)parent.GetData("controller");
+            var projLeft = controller.GetProjectileLeft();
+            float currentDistance = Vector3.Distance(controller.GetAutoBotPosition(), controller.GetEnemyPosition());
+            UpdateEnemyData(controller);
+
+            if (projLeft > 0 && currentDistance > controller.GetProjectileMaxDistance() * shootDistanceScalar && currentDistance <= controller.GetProjectileMaxDistance())
+            {
+                var enemyVel = enemyVelocity * enemyDirection;
+                var dist = Vector2.Distance(previousEnemyPos, controller.GetAutoBotPosition());
+                var bulletTime = dist / bulletVelocity;
+
+                Vector2 enemyPos = enemyVelocity == 0 ? controller.GetEnemyPosition() : previousEnemyPos + enemyVel * bulletTime;
+                Vector2 playerPos = controller.GetAutoBotPosition();
+                var diff = enemyPos - playerPos;
+                controller.SetFacing(diff);
+                if (projLeft > 0)
+                {
+                    controller.Fire(diff);
+                    return NodeState.Success;
+                }
+                previousEnemyPos = Vector2.zero;
+                enemyDirection = Vector2.zero;
+                return NodeState.Failure;
+            }
+            previousEnemyPos = Vector2.zero;
+            enemyDirection = Vector2.zero;
+            return NodeState.Failure;
+        }
+
+        private void UpdateEnemyData(AutoBotController controller)
+        {
+            enemyDirection = ((Vector2)controller.GetEnemyPosition() - previousEnemyPos).normalized;
+            previousEnemyPos = controller.GetEnemyPosition();
+        }
+    }
+
+    public class ShootNear : Node
+    {
+        private const float shootDistanceScalar = 0.2f;
 
         public override NodeState Evaluate()
         {
@@ -216,40 +260,6 @@ namespace BitBotBehaviourTree
                 if (projLeft >= 2)
                 {
                     controller.Fire(diff);
-                    return NodeState.Success;
-                }
-                return NodeState.Failure;
-            }
-            return NodeState.Failure;
-        }
-    }
-
-    public class ShootNear : Node
-    {
-        private const float shootDistanceScalar = 0.4f;
-
-        public override NodeState Evaluate()
-        {
-            var controller = (AutoBotController)parent.GetData("controller");
-            var projLeft = controller.GetProjectileLeft();
-            float currentDistance = Vector3.Distance(controller.GetAutoBotPosition(), controller.GetEnemyPosition());
-
-            if (projLeft > 0 && currentDistance > controller.GetProjectileMaxDistance() * shootDistanceScalar && currentDistance <= controller.GetProjectileMaxDistance())
-            {
-                var enemyPos = controller.GetEnemyPosition();
-                var playerPos = controller.GetAutoBotPosition();
-                var diff = enemyPos - playerPos;
-                controller.SetFacing(diff);
-                if (projLeft >= 3)
-                {
-                    controller.Fire(diff);
-                    controller.Fire(diff);
-                    return NodeState.Success;
-                }
-                else
-                {
-                    if (projLeft == 1)
-                        return NodeState.Failure;
                     controller.Fire(diff);
                     return NodeState.Success;
                 }
