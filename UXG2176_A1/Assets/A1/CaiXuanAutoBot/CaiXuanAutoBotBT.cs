@@ -1,13 +1,13 @@
 using Assignment1;
-using BehaviourTree;
 using System;
 using System.Collections.Generic;
+using CaiXuan_BehaviourTree;
 using UnityEngine;
 
-namespace BitBotBehaviourTree
+namespace CaiXuanAutoBot
 {
     // https://medium.com/geekculture/how-to-create-a-simple-behaviour-tree-in-unity-c-3964c84c060e
-    public class BitBotBT : BehaviourTree.Tree
+    public class CaiXuanAutoBotBT : CaiXuan_BehaviourTree.Tree
     {
         protected override Node SetupTree()
         {
@@ -243,7 +243,7 @@ namespace BitBotBehaviourTree
 
     public class ShootNear : Node
     {
-        private const float shootDistanceScalar = 0.2f;
+        private const float shootDistanceScalar = 0.25f;
 
         public override NodeState Evaluate()
         {
@@ -270,8 +270,20 @@ namespace BitBotBehaviourTree
 
     public class Melee : Node
     {
+        private const float meleeDistanceScalar = 0.1f;
+
         public override NodeState Evaluate()
         {
+            var controller = (AutoBotController)parent.GetData("controller");
+            float currentDistance = Vector3.Distance(controller.GetAutoBotPosition(), controller.GetEnemyPosition());
+
+            if (currentDistance <= controller.GetProjectileMaxDistance() * meleeDistanceScalar)
+            {
+                if (controller.IsMeleeAttackAvailable())
+                {
+                    controller.MeleeAttack();
+                }
+            }
             return NodeState.Failure;
         }
     }

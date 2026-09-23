@@ -59,14 +59,14 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6611996997967026548, guid: c55e80ef5f40235418ce6b15e83ee43b, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 7831519894741255840}
+      addedObject: {fileID: 9060480861333290748}
   m_SourcePrefab: {fileID: 100100000, guid: c55e80ef5f40235418ce6b15e83ee43b, type: 3}
 --- !u!1 &7999943490839506894 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6611996997967026548, guid: c55e80ef5f40235418ce6b15e83ee43b, type: 3}
   m_PrefabInstance: {fileID: 3803019426751182522}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7831519894741255840
+--- !u!114 &9060480861333290748
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -75,6 +75,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 7999943490839506894}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50c74ed26a988564fb2deda4fee0b91f, type: 3}
+  m_Script: {fileID: 11500000, guid: e10f15ab8ec59ea4f85d756c8ebf75fd, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::A1.A1AutoBot.BitBot
+  m_EditorClassIdentifier: Assembly-CSharp::CaiXuanAutoBot.BitBot

@@ -1,17 +1,16 @@
 using Assignment1;
-using BitBotBehaviourTree;
 using UnityEngine;
 
-namespace A1.A1AutoBot
+namespace CaiXuanAutoBot
 {
-    class BitBot: AutoBotContestant
+    class CaiXuanAutoBot: AutoBotContestant
     {
-        BitBotBT bitBotBT;
+        CaiXuanAutoBotBT bitBotBT;
 
         public override void Ready(AutoBot enemy, Color color)
         {
             base.Ready(enemy, color);
-            bitBotBT = new BitBotBT();
+            bitBotBT = new CaiXuanAutoBotBT();
             bitBotBT.Start(autobot);
         }
 

@@ -2,7 +2,7 @@ using Assignment1;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BehaviourTree
+namespace CaiXuan_BehaviourTree
 {
     public abstract class Tree 
     {
