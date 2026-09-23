@@ -121,12 +121,20 @@ namespace CaiXuanAutoBot
 
     public class Chase : Node
     {
-        private const float chaseDistanceScalar = .9f;
+        private float chaseDistanceScalar = .9f;
+        private float timer = 0f;
 
         public override NodeState Evaluate()
         {
             var controller = (AutoBotController)parent.GetData("controller");
             float currentDistance = Vector3.Distance(controller.GetAutoBotPosition(), controller.GetEnemyPosition());
+
+            timer += Time.deltaTime;
+            if (timer >= 16f)
+            {
+                chaseDistanceScalar = 0f;
+            }
+
             if (currentDistance < controller.GetProjectileMaxDistance() * chaseDistanceScalar)
             {
                 controller.SetMoveDir(Vector3.zero);
@@ -190,7 +198,6 @@ namespace CaiXuanAutoBot
                 }
                 controller.SetMoveDir(-diff);
             }
-            Debug.Log("CX Bot:\t Retreat");
             return NodeState.Success;
         }
     }
@@ -212,15 +219,15 @@ namespace CaiXuanAutoBot
 
             if (projLeft > 0 && currentDistance > controller.GetProjectileMaxDistance() * shootDistanceScalar && currentDistance <= controller.GetProjectileMaxDistance())
             {
-                var enemyVel = enemyVelocity * enemyDirection;
+                var enemyVel = enemyVelocity * -enemyDirection;
                 var dist = Vector2.Distance(previousEnemyPos, controller.GetAutoBotPosition());
                 var bulletTime = dist / bulletVelocity;
 
-                Vector2 enemyPos = enemyVelocity == 0 ? controller.GetEnemyPosition() : previousEnemyPos + enemyVel * bulletTime;
+                Vector2 enemyPos = enemyDirection == Vector2.zero ? controller.GetEnemyPosition() : previousEnemyPos + enemyVel * bulletTime;
                 Vector2 playerPos = controller.GetAutoBotPosition();
                 var diff = enemyPos - playerPos;
                 controller.SetFacing(diff);
-                if (projLeft > 0)
+                if (projLeft > 0 && projLeft <= 2)
                 {
                     controller.Fire(diff);
                     return NodeState.Success;
@@ -243,7 +250,7 @@ namespace CaiXuanAutoBot
 
     public class ShootNear : Node
     {
-        private const float shootDistanceScalar = 0.25f;
+        private const float shootDistanceScalar = 0.5f;
 
         public override NodeState Evaluate()
         {
@@ -259,8 +266,8 @@ namespace CaiXuanAutoBot
                 controller.SetFacing(diff);
                 if (projLeft >= 2)
                 {
-                    controller.Fire(diff);
-                    controller.Fire(diff);
+                    for (int i = 0; i < projLeft; i++)
+                        controller.Fire(diff);
                     return NodeState.Success;
                 }
             }
@@ -270,14 +277,14 @@ namespace CaiXuanAutoBot
 
     public class Melee : Node
     {
-        private const float meleeDistanceScalar = 0.1f;
+        private const float meleeDistance = 1f;
 
         public override NodeState Evaluate()
         {
             var controller = (AutoBotController)parent.GetData("controller");
             float currentDistance = Vector3.Distance(controller.GetAutoBotPosition(), controller.GetEnemyPosition());
 
-            if (currentDistance <= controller.GetProjectileMaxDistance() * meleeDistanceScalar)
+            if (currentDistance <= meleeDistance)
             {
                 if (controller.IsMeleeAttackAvailable())
                 {
